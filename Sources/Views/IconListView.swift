@@ -1,0 +1,96 @@
+import SwiftUI
+
+struct IconListView: View {
+    @State private var icons: [MenuBarIcon] = []
+    @State private var isScanning = false
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // 标题栏
+            HStack {
+                Text("菜单栏图标")
+                    .font(.headline)
+                Spacer()
+                Button(action: scanIcons) {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .disabled(isScanning)
+            }
+            .padding()
+            
+            Divider()
+            
+            // 图标列表
+            if icons.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "tray")
+                        .font(.system(size: 48))
+                        .foregroundColor(.secondary)
+                    Text("点击刷新按钮扫描图标")
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                List {
+                    ForEach(icons) { icon in
+                        IconRow(icon: icon)
+                    }
+                }
+            }
+        }
+        .frame(width: 300, height: 400)
+        .onAppear {
+            scanIcons()
+        }
+    }
+    
+    private func scanIcons() {
+        isScanning = true
+        DispatchQueue.global(qos: .userInitiated).async {
+            let scannedIcons = MenuBarScanner.shared.scanMenuBarIcons()
+            DispatchQueue.main.async {
+                self.icons = scannedIcons
+                self.isScanning = false
+            }
+        }
+    }
+}
+
+struct IconRow: View {
+    let icon: MenuBarIcon
+    @State private var isHidden: Bool
+    
+    init(icon: MenuBarIcon) {
+        self.icon = icon
+        _isHidden = State(initialValue: icon.isHidden)
+    }
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(icon.name)
+                    .font(.body)
+                if let bundleId = icon.bundleIdentifier {
+                    Text(bundleId)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            Spacer()
+            
+            Toggle("", isOn: $isHidden)
+                .labelsHidden()
+                .onChange(of: isHidden) { _, newValue in
+                    if let bundleId = icon.bundleIdentifier {
+                        ConfigManager.shared.toggleIconVisibility(bundleId: bundleId)
+                    }
+                }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+#Preview {
+    IconListView()
+}
