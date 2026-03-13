@@ -36,6 +36,8 @@ install: release
     @echo '    <true/>' >> NotchFix.app/Contents/Info.plist
     @echo '    <key>NSSupportsAutomaticTermination</key>' >> NotchFix.app/Contents/Info.plist
     @echo '    <true/>' >> NotchFix.app/Contents/Info.plist
+    @echo '    <key>NSAppleEventsUsageDescription</key>' >> NotchFix.app/Contents/Info.plist
+    @echo '    <string>NotchFix 需要访问辅助功能以管理菜单栏图标</string>' >> NotchFix.app/Contents/Info.plist
     @echo '</dict>' >> NotchFix.app/Contents/Info.plist
     @echo '</plist>' >> NotchFix.app/Contents/Info.plist
     @rm -rf /Applications/NotchFix.app
