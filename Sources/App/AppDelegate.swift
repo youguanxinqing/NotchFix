@@ -20,22 +20,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // 创建弹出窗口
         popover = NSPopover()
-        popover?.contentSize = NSSize(width: 300, height: 400)
+        popover?.contentSize = NSSize(width: 350, height: 500)
         popover?.behavior = .transient
-        popover?.contentViewController = NSHostingController(rootView: IconListView())
+        popover?.contentViewController = NSHostingController(rootView: AppListView())
         
         // 监听点击事件以关闭弹窗
         setupEventMonitor()
         
         // 创建右键菜单
         setupMenu()
-        
-        // 检查辅助功能权限
-        checkAccessibilityPermission()
-        
-        // 应用保存的隐藏配置
-        let config = ConfigManager.shared.getConfig()
-        IconManager.shared.applyConfig(config)
     }
     
     func setupEventMonitor() {
@@ -124,14 +117,5 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @objc func quitApp() {
         NSApplication.shared.terminate(nil)
-    }
-    
-    func checkAccessibilityPermission() {
-        let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
-        let accessEnabled = AXIsProcessTrustedWithOptions(options)
-        
-        if !accessEnabled {
-            print("⚠️ 需要辅助功能权限才能管理菜单栏图标")
-        }
     }
 }
