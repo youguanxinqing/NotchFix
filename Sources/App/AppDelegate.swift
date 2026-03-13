@@ -5,6 +5,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var popover: NSPopover?
     var menu: NSMenu?
+    var eventMonitor: Any?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         // 创建菜单栏图标
@@ -23,6 +24,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover?.behavior = .transient
         popover?.contentViewController = NSHostingController(rootView: IconListView())
         
+        // 监听点击事件以关闭弹窗
+        setupEventMonitor()
+        
         // 创建右键菜单
         setupMenu()
         
@@ -32,6 +36,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 应用保存的隐藏配置
         let config = ConfigManager.shared.getConfig()
         IconManager.shared.applyConfig(config)
+    }
+    
+    func setupEventMonitor() {
+        eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
+            if let popover = self?.popover, popover.isShown {
+                self?.closePopover()
+            }
+        }
+    }
+    
+    deinit {
+        if let monitor = eventMonitor {
+            NSEvent.removeMonitor(monitor)
+        }
     }
     
     func setupMenu() {
@@ -81,11 +99,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         if let popover = popover {
             if popover.isShown {
-                popover.performClose(nil)
+                closePopover()
             } else {
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+                // 激活应用以确保弹窗获得焦点
+                NSApp.activate(ignoringOtherApps: true)
             }
         }
+    }
+    
+    func closePopover() {
+        popover?.performClose(nil)
     }
     
     @objc func refreshIcons() {
