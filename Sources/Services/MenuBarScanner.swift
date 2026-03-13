@@ -19,11 +19,12 @@ class MenuBarScanner {
             &menuBarRef
         )
         
-        guard result == .success,
-              let menuBar = menuBarRef as? AXUIElement else {
+        guard result == .success, menuBarRef != nil else {
             print("❌ 无法访问菜单栏")
             return icons
         }
+        
+        let menuBar = menuBarRef as! AXUIElement
         
         // 获取菜单栏的子元素
         var childrenRef: CFTypeRef?

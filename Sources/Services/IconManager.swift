@@ -16,7 +16,7 @@ class IconManager {
         }
         
         // 尝试隐藏图标（通过设置 hidden 属性）
-        var hidden: CFTypeRef = kCFBooleanTrue
+        let hidden: CFTypeRef = kCFBooleanTrue
         let result = AXUIElementSetAttributeValue(
             element,
             kAXHiddenAttribute as CFString,
@@ -41,7 +41,7 @@ class IconManager {
         }
         
         // 显示图标
-        var hidden: CFTypeRef = kCFBooleanFalse
+        let hidden: CFTypeRef = kCFBooleanFalse
         let result = AXUIElementSetAttributeValue(
             element,
             kAXHiddenAttribute as CFString,
@@ -67,10 +67,11 @@ class IconManager {
             systemWideElement,
             kAXMenuBarAttribute as CFString,
             &menuBarRef
-        ) == .success,
-              let menuBar = menuBarRef as? AXUIElement else {
+        ) == .success, menuBarRef != nil else {
             return nil
         }
+        
+        let menuBar = menuBarRef as! AXUIElement
         
         var childrenRef: CFTypeRef?
         guard AXUIElementCopyAttributeValue(
