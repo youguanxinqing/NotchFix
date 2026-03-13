@@ -26,7 +26,7 @@ struct IconListView: View {
                     Image(systemName: "tray")
                         .font(.system(size: 48))
                         .foregroundColor(.secondary)
-                    Text("点击刷新按钮扫描图标")
+                    Text(isScanning ? "扫描中..." : "点击刷新按钮扫描图标")
                         .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -41,6 +41,14 @@ struct IconListView: View {
         .frame(width: 300, height: 400)
         .onAppear {
             scanIcons()
+            // 监听刷新通知
+            NotificationCenter.default.addObserver(
+                forName: NSNotification.Name("RefreshIcons"),
+                object: nil,
+                queue: .main
+            ) { _ in
+                scanIcons()
+            }
         }
     }
     
