@@ -9,6 +9,8 @@ class MenuBarScanner {
     func scanMenuBarIcons() -> [MenuBarIcon] {
         var icons: [MenuBarIcon] = []
         
+        print("🔍 开始扫描菜单栏图标...")
+        
         // 获取系统级 UI 元素
         let systemWideElement = AXUIElementCreateSystemWide()
         
@@ -19,8 +21,10 @@ class MenuBarScanner {
             &menuBarRef
         )
         
+        print("📊 获取菜单栏结果: \(result.rawValue)")
+        
         guard result == .success, menuBarRef != nil else {
-            print("❌ 无法访问菜单栏")
+            print("❌ 无法访问菜单栏 - 可能需要辅助功能权限")
             return icons
         }
         
@@ -40,9 +44,12 @@ class MenuBarScanner {
             return icons
         }
         
+        print("📋 找到 \(children.count) 个菜单栏元素")
+        
         // 遍历菜单栏项
-        for child in children {
+        for (index, child) in children.enumerated() {
             if let icon = extractIconInfo(from: child) {
+                print("  [\(index)] \(icon.name) - \(icon.bundleIdentifier ?? "无 Bundle ID")")
                 icons.append(icon)
             }
         }
