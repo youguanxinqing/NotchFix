@@ -11,7 +11,11 @@ class ConfigManager {
         let appDir = appSupport.appendingPathComponent("NotchFix", isDirectory: true)
         
         // 创建目录
-        try? FileManager.default.createDirectory(at: appDir, withIntermediateDirectories: true)
+        do {
+            try FileManager.default.createDirectory(at: appDir, withIntermediateDirectories: true)
+        } catch {
+            print("❌ 创建配置目录失败: \(error.localizedDescription)")
+        }
         
         configURL = appDir.appendingPathComponent("config.json")
         
@@ -19,8 +23,10 @@ class ConfigManager {
         if let data = try? Data(contentsOf: configURL),
            let loadedConfig = try? JSONDecoder().decode(Config.self, from: data) {
             config = loadedConfig
+            print("✅ 配置已加载")
         } else {
             config = .default
+            print("ℹ️ 使用默认配置")
         }
     }
     

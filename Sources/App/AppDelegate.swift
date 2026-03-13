@@ -23,6 +23,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // 检查辅助功能权限
         checkAccessibilityPermission()
+        
+        // 应用保存的隐藏配置
+        let config = ConfigManager.shared.getConfig()
+        IconManager.shared.applyConfig(config)
     }
     
     @objc func togglePopover() {

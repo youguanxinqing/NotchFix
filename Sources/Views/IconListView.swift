@@ -62,7 +62,10 @@ struct IconRow: View {
     
     init(icon: MenuBarIcon) {
         self.icon = icon
-        _isHidden = State(initialValue: icon.isHidden)
+        // 从配置中读取隐藏状态
+        let config = ConfigManager.shared.getConfig()
+        let hidden = icon.bundleIdentifier.map { config.hiddenApps.contains($0) } ?? false
+        _isHidden = State(initialValue: hidden)
     }
     
     var body: some View {
@@ -84,6 +87,13 @@ struct IconRow: View {
                 .onChange(of: isHidden) { newValue in
                     if let bundleId = icon.bundleIdentifier {
                         ConfigManager.shared.toggleIconVisibility(bundleId: bundleId)
+                        
+                        // 实际隐藏/显示图标
+                        if newValue {
+                            _ = IconManager.shared.hideIcon(bundleId: bundleId)
+                        } else {
+                            _ = IconManager.shared.showIcon(bundleId: bundleId)
+                        }
                     }
                 }
         }
