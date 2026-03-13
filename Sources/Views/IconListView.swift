@@ -81,7 +81,7 @@ struct IconRow: View {
             
             Toggle("", isOn: $isHidden)
                 .labelsHidden()
-                .onChange(of: isHidden) { _, newValue in
+                .onChange(of: isHidden) { newValue in
                     if let bundleId = icon.bundleIdentifier {
                         ConfigManager.shared.toggleIconVisibility(bundleId: bundleId)
                     }
@@ -89,8 +89,4 @@ struct IconRow: View {
         }
         .padding(.vertical, 4)
     }
-}
-
-#Preview {
-    IconListView()
 }

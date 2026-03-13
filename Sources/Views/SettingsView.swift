@@ -38,7 +38,3 @@ struct SettingsView: View {
         NSWorkspace.shared.open(url)
     }
 }
-
-#Preview {
-    SettingsView()
-}
