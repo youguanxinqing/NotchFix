@@ -11,6 +11,18 @@ class MenuBarScanner {
         
         print("🔍 开始扫描菜单栏图标...")
         
+        // 先检查权限
+        let trusted = AXIsProcessTrusted()
+        if !trusted {
+            print("⚠️ 没有辅助功能权限，尝试请求...")
+            let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
+            _ = AXIsProcessTrustedWithOptions(options)
+            print("❌ 请在系统设置中授予辅助功能权限后重启应用")
+            return icons
+        }
+        
+        print("✅ 已获得辅助功能权限")
+        
         // 获取系统级 UI 元素
         let systemWideElement = AXUIElementCreateSystemWide()
         
@@ -21,10 +33,10 @@ class MenuBarScanner {
             &menuBarRef
         )
         
-        print("📊 获取菜单栏结果: \(result.rawValue)")
+        print("📊 获取菜单栏结果: \(result.rawValue) (\(axErrorDescription(result)))")
         
         guard result == .success, menuBarRef != nil else {
-            print("❌ 无法访问菜单栏 - 可能需要辅助功能权限")
+            print("❌ 无法访问菜单栏")
             return icons
         }
         
@@ -81,5 +93,27 @@ class MenuBarScanner {
         
         let name = description ?? title
         return MenuBarIcon(name: name, bundleIdentifier: bundleId)
+    }
+    
+    private func axErrorDescription(_ error: AXError) -> String {
+        switch error {
+        case .success: return "成功"
+        case .failure: return "失败"
+        case .illegalArgument: return "非法参数"
+        case .invalidUIElement: return "无效的 UI 元素"
+        case .invalidUIElementObserver: return "无效的观察者"
+        case .cannotComplete: return "无法完成"
+        case .attributeUnsupported: return "属性不支持"
+        case .actionUnsupported: return "操作不支持"
+        case .notificationUnsupported: return "通知不支持"
+        case .notImplemented: return "未实现"
+        case .notificationAlreadyRegistered: return "通知已注册"
+        case .notificationNotRegistered: return "通知未注册"
+        case .apiDisabled: return "API 已禁用 - 需要辅助功能权限"
+        case .noValue: return "无值"
+        case .parameterizedAttributeUnsupported: return "参数化属性不支持"
+        case .notEnoughPrecision: return "精度不足"
+        default: return "未知错误 (\(error.rawValue))"
+        }
     }
 }

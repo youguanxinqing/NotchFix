@@ -20,9 +20,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         // 创建弹出窗口
         popover = NSPopover()
-        popover?.contentSize = NSSize(width: 350, height: 500)
+        popover?.contentSize = NSSize(width: 300, height: 400)
         popover?.behavior = .transient
-        popover?.contentViewController = NSHostingController(rootView: AppListView())
+        popover?.contentViewController = NSHostingController(rootView: IconListView())
         
         // 监听点击事件以关闭弹窗
         setupEventMonitor()

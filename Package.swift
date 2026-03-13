@@ -12,7 +12,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "NotchFix",
-            path: "Sources"
+            path: "Sources",
+            linkerSettings: [
+                .unsafeFlags(["-Xlinker", "-sectcreate", "-Xlinker", "__TEXT", "-Xlinker", "__info_plist", "-Xlinker", "NotchFix.entitlements"])
+            ]
         )
     ]
 )
